@@ -28,6 +28,9 @@ public class Estado implements Serializable
 	
 	@Column(name = "descricao")
 	private String descricao;
+	
+	@Column(name = "sigla")
+	private String sigla;
 
 	
 	public BigInteger getIdEstado() {
@@ -44,5 +47,13 @@ public class Estado implements Serializable
 
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
+	}
+
+	public String getSigla() {
+		return sigla;
+	}
+
+	public void setSigla(String sigla) {
+		this.sigla = sigla;
 	}
 }
