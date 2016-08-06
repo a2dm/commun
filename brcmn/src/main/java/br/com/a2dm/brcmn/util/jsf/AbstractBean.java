@@ -613,6 +613,7 @@ public abstract class AbstractBean<Entity, Business extends A2DMHbNgc<Entity>>
     		 setEntity(getNewEntityInstance());
     		 setCurrentState(STATE_INSERT);
     		 
+    		 setDefaultInserir();
     		 setListaInserir();
     	 }
       }
@@ -630,6 +631,11 @@ public abstract class AbstractBean<Entity, Business extends A2DMHbNgc<Entity>>
    protected void setListaInserir() throws Exception
    {
    }
+   
+   protected void setDefaultInserir() throws Exception
+   {
+   }
+   
    protected void setListaAlterar() throws Exception
    {
       setListaInserir();

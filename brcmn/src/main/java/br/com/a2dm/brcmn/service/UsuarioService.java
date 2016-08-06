@@ -12,6 +12,7 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 
 import br.com.a2dm.brcmn.entity.Usuario;
 import br.com.a2dm.brcmn.entity.log.UsuarioLog;
@@ -37,6 +38,14 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	public static final int JOIN_TELA_ACAO = 4;
 	
 	public static final int JOIN_ACAO = 8;
+	
+	public static final int JOIN_USUARIO_CAD = 16;
+	
+	public static final int JOIN_USUARIO_ALT = 32;
+	
+	public static final int JOIN_ESTADO = 64;
+	
+	public static final int JOIN_CLIENTE = 128;
 
 	@SuppressWarnings("rawtypes")
 	private static Map filtroPropriedade = new HashMap();
@@ -59,6 +68,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		adicionarFiltro("idUsuario", RestritorHb.RESTRITOR_EQ,"idUsuario");
 		adicionarFiltro("login", RestritorHb.RESTRITOR_EQ, "login");
 		adicionarFiltro("login", RestritorHb.RESTRITOR_LIKE, "filtroMap.likeLogin");
+		adicionarFiltro("email", RestritorHb.RESTRITOR_EQ, "email");
 		adicionarFiltro("senha", RestritorHb.RESTRITOR_EQ, "senha");
 		adicionarFiltro("flgAtivo", RestritorHb.RESTRITOR_EQ, "flgAtivo");
 		adicionarFiltro("idConselho", RestritorHb.RESTRITOR_EQ, "idConselho");
@@ -72,48 +82,58 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		adicionarFiltro("grupo.flgAtivo", RestritorHb.RESTRITOR_EQ, "filtroMap.flgAtivoGrupo");
 		adicionarFiltro("listaGrupoTelaAcao.flgAtivo", RestritorHb.RESTRITOR_EQ, "filtroMap.flgAtivoGrupoTelaAcao");
 		adicionarFiltro("telaAcao.flgAtivo", RestritorHb.RESTRITOR_EQ, "filtroMap.flgAtivoTelaAcao");
+		adicionarFiltro("idCliente", RestritorHb.RESTRITOR_EQ, "idCliente");
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void validarInserir(Session sessao, Usuario vo) throws Exception
 	{
 		Criteria criteria = sessao.createCriteria(Usuario.class);
 		Disjunction or = Restrictions.disjunction();
-		or.add(Restrictions.eq("nome", vo.getNome()));
-		or.add(Restrictions.eq("email",vo.getEmail()));
-		or.add(Restrictions.eq("login",vo.getLogin()));
-		or.add(Restrictions.eq("cpf",vo.getCpf()));
+		or.add(Restrictions.eq("nome", vo.getNome()).ignoreCase());
+		or.add(Restrictions.eq("email",vo.getEmail()).ignoreCase());
+		or.add(Restrictions.eq("login",vo.getLogin()).ignoreCase());
+		or.add(Restrictions.eq("cpf",vo.getCpf()).ignoreCase());
 		criteria.add(or);
 		
-		Usuario usuario = (Usuario) criteria.uniqueResult();
-		
-		if(usuario != null)
-		{
-			if(vo.getLogin().equalsIgnoreCase(usuario.getLogin()))
-			{
-				throw new Exception("JÃ¡ existe um usuÃ¡rio cadastrado com este Login.");
-			}
-			
-			if(vo.getCpf().equalsIgnoreCase(usuario.getCpf()))
-			{
-				throw new Exception("JÃ¡ existe um usuÃ¡rio cadastrado com este Cpf.");
-			}
-			
-			if(vo.getEmail().equalsIgnoreCase(usuario.getEmail()))
-			{
-				throw new Exception("JÃ¡ existe um usuÃ¡rio cadastrado com este E-mail.");
-			}
-		}
-		
-		Usuario usrCons = new Usuario();
-		usrCons.setIdConselho(vo.getIdConselho());
-		usrCons.setNumConselho(vo.getNumConselho());
-		
-		List<Usuario> lista = this.pesquisar(sessao, usrCons, 0);
+		List<Usuario> lista = criteria.list();
 		
 		if(lista != null
 				&& lista.size() > 0)
 		{
-			throw new Exception("JÃ¡ existe um usuÃ¡rio com este Conselho.");
+			if(vo.getNome().equalsIgnoreCase(lista.get(0).getNome()))
+			{
+				throw new Exception("Já existe um usuário cadastrado com este Nome.");
+			}
+			if(vo.getEmail().equalsIgnoreCase(lista.get(0).getEmail()))
+			{
+				throw new Exception("Já existe um usuário cadastrado com este E-mail.");
+			}
+			if(vo.getLogin().equalsIgnoreCase(lista.get(0).getLogin()))
+			{
+				throw new Exception("Já existe um usuário cadastrado com este Login.");
+			}
+			
+			if(vo.getCpf().equalsIgnoreCase(lista.get(0).getCpf()))
+			{
+				throw new Exception("Já existe um usuário cadastrado com este Cpf.");
+			}
+		}
+		
+		if(vo.getIdConselho() != null
+				&& vo.getIdConselho().intValue() >= 0)
+		{
+			Usuario usrCons = new Usuario();
+			usrCons.setIdConselho(vo.getIdConselho());
+			usrCons.setNumConselho(vo.getNumConselho());
+			
+			List<Usuario> listaUsuario = this.pesquisar(sessao, usrCons, 0);
+			
+			if(listaUsuario != null
+					&& listaUsuario.size() > 0)
+			{
+				throw new Exception("Já existe um usuário com este Conselho.");
+			}
 		}
 	}
 	
@@ -138,7 +158,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	{
 		this.validarInserir(sessao, vo);
 		
-		//GERAR SENHA AUTOMÃ�TICA E INSERIR USUARIO
+		//GERAR SENHA AUTOMATICA E INSERIR USUARIO
 		String senha = SenhaRandom.getSenhaRandom();
 		vo.setSenha(CriptoMD5.stringHexa(senha));
 		sessao.save(vo);
@@ -154,7 +174,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	{
 		Email email = new Email();
 		
-		String assunto = "Acesso A2DM - ClÃ­nica";
+		String assunto = "Acesso A2DM - Clínica";
 		String texto = "Nome: "+ vo.getNome() +" \n" +
 				   "Login: "+ vo.getLogin() +" \n" +
 				   "Senha: "+ senha;
@@ -177,6 +197,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		}
 		catch (Exception e)
 		{
+			vo.setFlgAtivo("N");
 			tx.rollback();
 			throw e;
 		}
@@ -219,6 +240,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		}
 		catch (Exception e)
 		{
+			vo.setFlgAtivo("S");
 			tx.rollback();
 			throw e;
 		}
@@ -285,6 +307,26 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 					 }
 				 }
 		    }
+	    }
+		
+		if ((join & JOIN_USUARIO_CAD) != 0)
+	    {
+	         criteria.createAlias("usuarioCad", "usuarioCad");
+	    }
+		
+		if ((join & JOIN_USUARIO_ALT) != 0)
+	    {
+	         criteria.createAlias("usuarioAlt", "usuarioAlt", JoinType.LEFT_OUTER_JOIN);
+	    }
+		
+		if ((join & JOIN_ESTADO) != 0)
+	    {
+	         criteria.createAlias("estado", "estado");
+	    }
+		
+		if ((join & JOIN_CLIENTE) != 0)
+	    {
+	         criteria.createAlias("cliente", "cliente");
 	    }
 		
 		return criteria;

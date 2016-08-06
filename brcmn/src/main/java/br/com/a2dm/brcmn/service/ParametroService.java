@@ -5,49 +5,41 @@ import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
-import org.hibernate.criterion.Order;
 
-import br.com.a2dm.brcmn.entity.Estado;
+import br.com.a2dm.brcmn.entity.Parametro;
 import br.com.a2dm.brcmn.util.A2DMHbNgc;
 import br.com.a2dm.brcmn.util.RestritorHb;
 
-public class EstadoService extends A2DMHbNgc<Estado>
+public class ParametroService extends A2DMHbNgc<Parametro>
 {
-	private static EstadoService instancia = null;
-
+	private static ParametroService instancia = null;
+		
 	@SuppressWarnings("rawtypes")
 	private static Map filtroPropriedade = new HashMap();
 	
 	@SuppressWarnings("rawtypes")
 	private static Map restritores = new HashMap();
 	
-	public static EstadoService getInstancia()
+	public static ParametroService getInstancia()
 	{
 		if (instancia == null)
 		{
-			instancia = new EstadoService();
+			instancia = new ParametroService();
 		}
 		return instancia;
 	}
 	
-	public EstadoService()
+	public ParametroService()
 	{
-		adicionarFiltro("idEstado", RestritorHb.RESTRITOR_EQ,"idEstado");
-		adicionarFiltro("descricao", RestritorHb.RESTRITOR_LIKE, "descricao");
-		adicionarFiltro("sigla", RestritorHb.RESTRITOR_EQ, "sigla");
+		adicionarFiltro("idParametro", RestritorHb.RESTRITOR_EQ, "idParametro");
+		adicionarFiltro("descricao", RestritorHb.RESTRITOR_EQ, "descricao");
 	}
 	
 	@Override
 	protected Criteria montaCriteria(Session sessao, int join)
 	{
-		Criteria criteria = sessao.createCriteria(Estado.class);
+		Criteria criteria = sessao.createCriteria(Parametro.class);
 		return criteria;
-	}
-	
-	@Override
-	protected void setarOrdenacao(Criteria criteria, Estado vo, int join)
-	{
-		criteria.addOrder(Order.asc("descricao"));
 	}
 	
 	@Override

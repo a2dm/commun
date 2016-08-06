@@ -28,13 +28,13 @@ import org.hibernate.annotations.Proxy;
 
 @Entity
 @Table(name = "tb_usuario", schema="seg")
-@SequenceGenerator(name = "SQ_USUARIO", sequenceName = "SQ_USUARIO", allocationSize = 1)
 @Proxy(lazy = true)
 public class Usuario implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	
 	@Id
+	@SequenceGenerator(name = "SQ_USUARIO", sequenceName = "seg.SQ_USUARIO", allocationSize = 1, schema = "seg", catalog = "spdm")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SQ_USUARIO")
 	@Column(name = "id_usuario")
 	private BigInteger idUsuario;
@@ -68,12 +68,20 @@ public class Usuario implements Serializable
 	@Column(name = "id_usuario_cad")
 	private BigInteger idUsuarioCad;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_usuario_cad", insertable = false, updatable = false)
+	private Usuario usuarioCad;
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dat_alteracao")
 	private Date dataAlteracao;
 	
 	@Column(name = "id_usuario_alt")
 	private BigInteger idUsuarioAlt;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_usuario_alt", insertable = false, updatable = false)
+	private Usuario usuarioAlt;
 	
 	@Column(name = "flg_ativo")
 	private String flgAtivo;
@@ -105,6 +113,10 @@ public class Usuario implements Serializable
 	@Column(name = "id_estado")
 	private BigInteger idEstado;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_estado", insertable = false, updatable = false)
+	private Estado estado;
+	
 	@Column(name = "complemento")
 	private String complemento;
 	
@@ -121,12 +133,20 @@ public class Usuario implements Serializable
 	@Column(name = "flg_seguranca")
 	private String flgSeguranca;
 	
+	@Column(name = "id_cliente")
+	private BigInteger idCliente;
+	
 	@Transient
 	private BigInteger[] arrayPermissoes;
 	
 	@Transient
 	private HashMap<String, Object> filtroMap;
 	
+	@Transient
+	private String desCliente;
+	
+	@Transient
+	private String novaSenha;
 	
 	public BigInteger getIdUsuario() {
 		return idUsuario;
@@ -358,5 +378,53 @@ public class Usuario implements Serializable
 
 	public void setFlgSeguranca(String flgSeguranca) {
 		this.flgSeguranca = flgSeguranca;
+	}
+
+	public BigInteger getIdCliente() {
+		return idCliente;
+	}
+
+	public void setIdCliente(BigInteger idCliente) {
+		this.idCliente = idCliente;
+	}
+
+	public Usuario getUsuarioCad() {
+		return usuarioCad;
+	}
+
+	public void setUsuarioCad(Usuario usuarioCad) {
+		this.usuarioCad = usuarioCad;
+	}
+
+	public Usuario getUsuarioAlt() {
+		return usuarioAlt;
+	}
+
+	public void setUsuarioAlt(Usuario usuarioAlt) {
+		this.usuarioAlt = usuarioAlt;
+	}
+
+	public Estado getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Estado estado) {
+		this.estado = estado;
+	}
+
+	public String getDesCliente() {
+		return desCliente;
+	}
+
+	public void setDesCliente(String desCliente) {
+		this.desCliente = desCliente;
+	}
+
+	public String getNovaSenha() {
+		return novaSenha;
+	}
+
+	public void setNovaSenha(String novaSenha) {
+		this.novaSenha = novaSenha;
 	}
 }
