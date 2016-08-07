@@ -65,7 +65,9 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	public UsuarioService()
 	{
 		adicionarFiltro("nome", RestritorHb.RESTRITOR_LIKE, "nome");
+		adicionarFiltro("nome", RestritorHb.RESTRITOR_EQ, "filtroMap.nome");
 		adicionarFiltro("idUsuario", RestritorHb.RESTRITOR_EQ,"idUsuario");
+		adicionarFiltro("idUsuario", RestritorHb.RESTRITOR_NE, "filtroMap.idUsuarioNotEq");
 		adicionarFiltro("login", RestritorHb.RESTRITOR_EQ, "login");
 		adicionarFiltro("login", RestritorHb.RESTRITOR_LIKE, "filtroMap.likeLogin");
 		adicionarFiltro("email", RestritorHb.RESTRITOR_EQ, "email");
@@ -138,8 +140,27 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	}
 	
 	@Override
+	protected void validarAlterar(Session sessao, Usuario vo) throws Exception
+	{
+		Usuario usuario = new Usuario();
+		usuario.setFiltroMap(new HashMap<String, Object>());
+		usuario.getFiltroMap().put("idUsuarioNotEq", vo.getIdUsuario());
+		usuario.getFiltroMap().put("nome", vo.getNome().trim());
+		usuario.setFlgAtivo(vo.getFlgAtivo());
+		
+		usuario = this.get(sessao, usuario, 0);
+		
+		if(usuario != null)
+		{
+			throw new Exception("Este usuário já está cadastrado na sua base de dados!");
+		}
+	}
+	
+	@Override
 	public Usuario alterar(Session sessao, Usuario vo) throws Exception
-	{		
+	{
+		this.validarAlterar(sessao, vo);
+		
 		Usuario usuario = new Usuario();
 		usuario.setIdUsuario(vo.getIdUsuario());		
 		usuario = this.get(sessao, usuario, 0);
