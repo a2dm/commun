@@ -291,6 +291,54 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		return vo;
 	}
 	
+	public Usuario alterarSenha(Usuario vo, String novaSenha) throws Exception
+	{
+		Session sessao = HibernateUtil.getSession();
+		sessao.setFlushMode(FlushMode.COMMIT);
+		Transaction tx = sessao.beginTransaction();
+		try
+		{
+			vo = alterarSenha(sessao, vo, novaSenha);
+			tx.commit();
+			return vo;
+		}
+		catch (Exception e)
+		{
+			vo.setFlgAtivo("N");
+			tx.rollback();
+			throw e;
+		}
+		finally
+		{
+			sessao.close();
+		}
+	}
+	
+	public Usuario alterarSenha(Session sessao, Usuario vo, String novaSenha) throws Exception
+	{
+		Usuario usuario = new Usuario();
+		usuario.setIdUsuario(vo.getIdUsuario());
+		usuario.setNome(vo.getNome());
+		usuario.setSenha(CriptoMD5.stringHexa(vo.getSenha().toUpperCase()));
+		
+		usuario = this.get(sessao, usuario, 0);
+		
+		if(usuario != null)
+		{
+			usuario.setSenha(CriptoMD5.stringHexa(novaSenha));
+			usuario.setIdUsuarioAlt(vo.getIdUsuarioAlt());
+			usuario.setDataAlteracao(vo.getDataAlteracao());
+			
+			usuario = this.alterar(sessao, usuario);
+		}
+		else
+		{
+			throw new Exception("O campo Senha Atual está incorreto.");
+		}
+		
+		return usuario;
+	}
+	
 	@Override
 	@SuppressWarnings("rawtypes")
 	protected Map restritores() 

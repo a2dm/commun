@@ -1,5 +1,6 @@
 package br.com.a2dm.brcmn.util.jsf;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -12,10 +13,19 @@ import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.richfaces.component.UIDataTable;
 
 import br.com.a2dm.brcmn.util.A2DMHbNgc;
+import br.com.a2dm.brcmn.util.outros.Utilitarios;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 /**
  * Classe base para ser usada por cadastros. Cont�m o fluxo base de troca
@@ -1241,42 +1251,116 @@ public abstract class AbstractBean<Entity, Business extends A2DMHbNgc<Entity>>
       this.pageTitle = pageTitle;
    }
 
-   /**
-    * Retorna <code>true</code> se o estado estiver em relat�rio.
-    * 
-    * @return - <code>true</code> se o estado estiver em relat�rio.
-    */
-   public boolean isReporting()
-   {
-      return (this.REPORT_NAME != null);
-   }
-
-   /**
-    * Retorna os par�metros que ser�o utilizados no relat�rio
-    * 
-    * @return - os par�metros que ser�o utilizados no relat�rio
-    */
-   @SuppressWarnings("rawtypes")
-   protected Map getParametersReport() throws Exception
-   {
-      return new HashMap();
-   }
    
-   @SuppressWarnings("rawtypes")
-   protected Map getParametersReport(List<Entity> lista) throws Exception
+   @SuppressWarnings({ "deprecation", "rawtypes", "unchecked" })
+   public String imprimir() 
    {
-	   return getParametersReport();
-   }
-
-   /**
-    * M�todo que valida se todos os campos obrigat�rios do relat�rio foram
-    * preenchidos
-    * 
-    * @throws Exception - erro inesperado da aplica��o
-    */
-   protected void validateReport() throws Exception
-   {
-   }
+	   try 
+	   {
+		   HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		   Utilitarios.removerArquivos(request.getRealPath("") + "/temp");
+			
+			if (getListaReport() == null 
+					|| getListaReport().size() <= 0) 
+			{
+				FacesMessage message = new FacesMessage("Não existem dados para a impressão do relatório!");
+				message.setSeverity(FacesMessage.SEVERITY_ERROR);
+				FacesContext.getCurrentInstance().addMessage(null, message);
+				return null;
+			}
+			
+			String pathJasper = request.getRealPath("WEB-INF/relatorios");
+			
+			String os = System.getProperty("os.name");
+			File pasta = new File((os.toLowerCase().indexOf("linux") > -1 ? "/" : "\\"));
+			pathJasper += pasta;
+			
+			Map parameters = new HashMap();
+			
+			this.validaRelatorio();
+			this.configuraRelatorio(parameters, request);			
+			
+			JasperReport jasperReport = (JasperReport) JRLoader.loadObjectFromFile(pathJasper + "/" + this.REPORT_NAME + ".jasper");
+			
+			if (jasperReport == null) 
+			{
+				FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Nenhum relatório selecionado.", null));
+			}
+			
+			String pathPdf = "/temp/" + request.getRequestedSessionId() + String.valueOf(Math.random() * 10000) + this.REPORT_NAME + ".pdf";
+			
+						
+			JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(getSearchResult());			
+			
+			JasperPrint print = JasperFillManager.fillReport(jasperReport, parameters, ds);
+	 
+			JasperExportManager.exportReportToPdfFile(print, request.getRealPath("") + pathPdf);
+			
+			HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+			response.sendRedirect(request.getContextPath() + pathPdf);
+		}
+		catch (Exception e) 
+		{
+			FacesMessage message = new FacesMessage(e.getMessage());
+			message.setSeverity(FacesMessage.SEVERITY_ERROR);
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+		return null;
+	}
+   
+   	@SuppressWarnings("rawtypes")
+	public List getListaReport()
+   	{
+   		return getSearchResult();
+   	}
+   	
+   	/**
+   	 * Setar a variável => REPORT_NAME;
+   	 * Setar parametros
+   	 */
+   	public void configuraRelatorio(Map parameters, HttpServletRequest request){}
+   	
+   	/**
+   	 * Realizar validacoes para o relatorio
+   	 */
+   	public void validaRelatorio(){}
+   
+//   /**
+//    * Retorna <code>true</code> se o estado estiver em relat�rio.
+//    * 
+//    * @return - <code>true</code> se o estado estiver em relat�rio.
+//    */
+//   public boolean isReporting()
+//   {
+//      return (this.REPORT_NAME != null);
+//   }
+//
+//   /**
+//    * Retorna os par�metros que ser�o utilizados no relat�rio
+//    * 
+//    * @return - os par�metros que ser�o utilizados no relat�rio
+//    */
+//   @SuppressWarnings("rawtypes")
+//   protected Map getParametersReport() throws Exception
+//   {
+//      return new HashMap();
+//   }
+//   
+//   @SuppressWarnings("rawtypes")
+//   protected Map getParametersReport(List<Entity> lista) throws Exception
+//   {
+//	   return getParametersReport();
+//   }
+//
+//   /**
+//    * M�todo que valida se todos os campos obrigat�rios do relat�rio foram
+//    * preenchidos
+//    * 
+//    * @throws Exception - erro inesperado da aplica��o
+//    */
+//   protected void validateReport() throws Exception
+//   {
+//   }
    
    protected boolean validarAcesso(String acao) 
    {
