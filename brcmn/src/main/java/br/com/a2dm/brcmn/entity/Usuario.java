@@ -25,7 +25,6 @@ import org.hibernate.annotations.Proxy;
  * @author Carlos Diego
  * @since 26/01/2016
  */
-
 @Entity
 @Table(name = "tb_usuario", schema="ped")
 @Proxy(lazy = true)
