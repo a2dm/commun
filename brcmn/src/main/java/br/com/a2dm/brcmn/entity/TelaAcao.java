@@ -31,7 +31,7 @@ import org.hibernate.annotations.Proxy;
  */
 
 @Entity
-@Table(name = "tb_tela_acao", schema="seg")
+@Table(name = "tb_tela_acao", schema="ped")
 @SequenceGenerator(name = "SQ_TELA_ACAO", sequenceName = "SQ_TELA_ACAO", allocationSize = 1)
 @Proxy(lazy = true)
 public class TelaAcao implements Serializable

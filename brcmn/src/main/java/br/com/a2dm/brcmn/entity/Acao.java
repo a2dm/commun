@@ -16,7 +16,7 @@ import org.hibernate.annotations.Proxy;
  */
 
 @Entity
-@Table(name = "tb_acao", schema="seg")
+@Table(name = "tb_acao", schema="ped")
 @Proxy(lazy = true)
 public class Acao implements Serializable
 {

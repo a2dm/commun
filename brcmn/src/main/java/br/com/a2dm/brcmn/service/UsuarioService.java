@@ -195,7 +195,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	{
 		Email email = new Email();
 		
-		String assunto = "Acesso A2DM - Clínica";
+		String assunto = "Acesso Speciale - Sistema de Pedido";
 		String texto = "Nome: "+ vo.getNome() +" \n" +
 				   "Login: "+ vo.getLogin() +" \n" +
 				   "Senha: "+ senha;
@@ -317,7 +317,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	public Usuario alterarSenha(Session sessao, Usuario vo, String novaSenha) throws Exception
 	{
 		Usuario usuario = new Usuario();
-		usuario.setIdUsuario(vo.getIdUsuario());
+		usuario.setIdUsuario(vo.getIdUsuarioAlt());
 		usuario.setNome(vo.getNome());
 		usuario.setSenha(CriptoMD5.stringHexa(vo.getSenha().toUpperCase()));
 		
@@ -325,7 +325,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		
 		if(usuario != null)
 		{
-			usuario.setSenha(CriptoMD5.stringHexa(novaSenha));
+			usuario.setSenha(CriptoMD5.stringHexa(novaSenha.toUpperCase()));
 			usuario.setIdUsuarioAlt(vo.getIdUsuarioAlt());
 			usuario.setDataAlteracao(vo.getDataAlteracao());
 			
@@ -390,7 +390,7 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		
 		if ((join & JOIN_ESTADO) != 0)
 	    {
-	         criteria.createAlias("estado", "estado");
+	         criteria.createAlias("estado", "estado", JoinType.LEFT_OUTER_JOIN);
 	    }
 		
 		if ((join & JOIN_CLIENTE) != 0)

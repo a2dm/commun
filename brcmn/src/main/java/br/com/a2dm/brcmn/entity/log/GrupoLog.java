@@ -27,7 +27,7 @@ import br.com.a2dm.brcmn.entity.Usuario;
  */
 
 @Entity
-@Table(name = "tb_grupo_log", schema="seg")
+@Table(name = "tb_grupo_log", schema="ped")
 @SequenceGenerator(name = "SQ_GRUPO_LOG", sequenceName = "SQ_GRUPO_LOG", allocationSize = 1)
 @Proxy(lazy = true)
 public class GrupoLog implements Serializable

@@ -1276,6 +1276,7 @@ public abstract class AbstractBean<Entity, Business extends A2DMHbNgc<Entity>>
 			pathJasper += pasta;
 			
 			Map parameters = new HashMap();
+			parameters.put("SUBREPORT_DIR", pathJasper);
 			
 			this.validaRelatorio();
 			this.configuraRelatorio(parameters, request);			

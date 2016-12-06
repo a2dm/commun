@@ -22,8 +22,8 @@ import org.hibernate.annotations.Proxy;
  */
 
 @Entity
-@Table(name = "tb_recuperar_senha", schema="seg")
-@SequenceGenerator(name = "SQ_RECUPERAR_SENHA", sequenceName = "seg.SQ_RECUPERAR_SENHA", allocationSize = 1)
+@Table(name = "tb_recuperar_senha", schema="ped")
+@SequenceGenerator(name = "SQ_RECUPERAR_SENHA", sequenceName = "SQ_RECUPERAR_SENHA", allocationSize = 1)
 @Proxy(lazy = true)
 public class RecuperarSenha implements Serializable
 {

@@ -24,8 +24,8 @@ import org.hibernate.annotations.Proxy;
  */
 
 @Entity
-@Table(name = "tb_usuario_log", schema="seg")
-@SequenceGenerator(name = "SQ_USUARIO_LOG", sequenceName = "seg.SQ_USUARIO_LOG", allocationSize = 1)
+@Table(name = "tb_usuario_log", schema="ped")
+@SequenceGenerator(name = "SQ_USUARIO_LOG", sequenceName = "SQ_USUARIO_LOG", allocationSize = 1)
 @Proxy(lazy = true)
 public class UsuarioLog implements Serializable
 {
