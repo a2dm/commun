@@ -46,6 +46,8 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	public static final int JOIN_ESTADO = 64;
 	
 	public static final int JOIN_CLIENTE = 128;
+	
+	public static final int JOIN_DEVICE = 256;
 
 	@SuppressWarnings("rawtypes")
 	private static Map filtroPropriedade = new HashMap();
@@ -396,6 +398,11 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 		if ((join & JOIN_CLIENTE) != 0)
 	    {
 	         criteria.createAlias("cliente", "cliente");
+	    }
+		
+		if ((join & JOIN_DEVICE) != 0)
+	    {
+			criteria.createAlias("listaUsuarioDevice", "listaUsuarioDevice", JoinType.LEFT_OUTER_JOIN);
 	    }
 		
 		return criteria;
