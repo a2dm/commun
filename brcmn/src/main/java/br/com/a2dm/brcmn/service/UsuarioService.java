@@ -320,8 +320,6 @@ public class UsuarioService extends A2DMHbNgc<Usuario>
 	{
 		Usuario usuario = new Usuario();
 		usuario.setIdUsuario(vo.getIdUsuarioAlt());
-		usuario.setNome(vo.getNome());
-		usuario.setSenha(CriptoMD5.stringHexa(vo.getSenha().toUpperCase()));
 		
 		usuario = this.get(sessao, usuario, 0);
 		

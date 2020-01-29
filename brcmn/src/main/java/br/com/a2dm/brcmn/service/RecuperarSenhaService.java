@@ -48,14 +48,16 @@ public class RecuperarSenhaService extends A2DMHbNgc<RecuperarSenha>
 		adicionarFiltro("hash", RestritorHb.RESTRITOR_EQ, "hash");
 	}
 	
-	public void gerarHash(String email) throws Exception
+	public Usuario gerarHash(String email) throws Exception
 	{
 		Session sessao = HibernateUtil.getSession();
 		sessao.setFlushMode(FlushMode.COMMIT);
 		Transaction tx = sessao.beginTransaction();
+		
+		Usuario usuario = null;
 		try
 		{
-			this.gerarHash(sessao, email);
+			usuario = this.gerarHash(sessao, email);
 			tx.commit();
 		}
 		catch (Exception e)
@@ -67,9 +69,10 @@ public class RecuperarSenhaService extends A2DMHbNgc<RecuperarSenha>
 		{
 			sessao.close();
 		}
+		return usuario;
 	}
 	
-	public void gerarHash(Session sessao, String email) throws Exception
+	public Usuario gerarHash(Session sessao, String email) throws Exception
 	{
 		Usuario usuario = new Usuario();
 		usuario.setFlgAtivo("S");
@@ -106,7 +109,7 @@ public class RecuperarSenhaService extends A2DMHbNgc<RecuperarSenha>
 			sessao.merge(objInsert);
 			sessao.flush();
 			
-			this.enviarEmailRecuperarSenha(sessao, usuario, objInsert.getHash());
+			return this.enviarEmailRecuperarSenha(sessao, usuario, objInsert.getHash());
 		}
 		else
 		{
@@ -140,7 +143,7 @@ public class RecuperarSenhaService extends A2DMHbNgc<RecuperarSenha>
 		sessao.delete(vo);
 	}
 	
-	private void enviarEmailRecuperarSenha(Session sessao, Usuario vo, String hash) throws Exception
+	private Usuario enviarEmailRecuperarSenha(Session sessao, Usuario vo, String hash) throws Exception
 	{
 		Parametro parametro = new Parametro();
 		parametro.setDescricao("CAMINHOAPP");
@@ -156,6 +159,7 @@ public class RecuperarSenhaService extends A2DMHbNgc<RecuperarSenha>
 		String to = vo.getEmail();
 		
 		email.enviar(to, assunto, texto);
+		return vo;
 	}
 	
 	public void atualizarNovaSenha(Usuario vo) throws Exception

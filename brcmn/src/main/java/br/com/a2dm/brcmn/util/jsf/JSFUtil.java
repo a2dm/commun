@@ -189,19 +189,18 @@ public class JSFUtil
     
     public HttpSession getSession()
     {
-       return ((HttpServletRequest) getFacesContext().getExternalContext().getRequest()).getSession();
+    	if (getFacesContext() != null) {
+    		return ((HttpServletRequest) getFacesContext().getExternalContext().getRequest()).getSession();
+    	}
+    	return null;
     }
     
     public Usuario getUsuarioLogado() throws Exception
    {
-
-      Object usuarioLogadoObj = getSession().getAttribute(AbstractBean.USUARIO_LOGADO);
-      if (usuarioLogadoObj == null)
-      {
-         throw new Exception("N�o existe usu�rio logado no sistema!");
-      }
-
-      return (Usuario) usuarioLogadoObj;
+    	if (getSession() != null) {
+    		return (Usuario) getSession().getAttribute(AbstractBean.USUARIO_LOGADO);
+    	}
+    	return null;
    }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
