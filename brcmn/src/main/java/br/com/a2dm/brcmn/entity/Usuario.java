@@ -25,7 +25,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Proxy;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /** 
  * @author Carlos Diego
@@ -52,7 +52,7 @@ public class Usuario implements Serializable
 	private String login;
 
 	@Column(name = "senha")
-	@JsonIgnore
+	@JsonIgnoreProperties
 	private String senha;
 	
 	@Column(name = "email")
@@ -77,7 +77,7 @@ public class Usuario implements Serializable
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_usuario_cad", insertable = false, updatable = false)
-	@JsonIgnore
+	@JsonIgnoreProperties
 	private Usuario usuarioCad;
 	
 	@Temporal(TemporalType.TIMESTAMP)
@@ -89,7 +89,7 @@ public class Usuario implements Serializable
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_usuario_alt", insertable = false, updatable = false)
-	@JsonIgnore
+	@JsonIgnoreProperties
 	private Usuario usuarioAlt;
 	
 	@Column(name = "flg_ativo")
@@ -137,7 +137,7 @@ public class Usuario implements Serializable
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "id_grupo", insertable = false, updatable = false)
-	@JsonIgnore
+	@JsonIgnoreProperties
 	private Grupo grupo;
 	
 	@Column(name = "flg_seguranca")
@@ -148,7 +148,7 @@ public class Usuario implements Serializable
 	
 	@OneToMany(mappedBy="usuario", fetch = FetchType.LAZY)
     @Cascade(CascadeType.ALL)	
-	@JsonIgnore
+	@JsonIgnoreProperties
 	private List<UsuarioDevice> listaUsuarioDevice;
 	
 	@Transient
