@@ -16,6 +16,8 @@ public class PedidoDTO {
 	private String observacao;
 	private String flgAtivo;
 	private BigInteger idExternoOmie;
+	private BigInteger codVend;
+	private String codParcelas;
 	private List<ProdutoDTO> produtos;
 	private UsuarioDTO usuarioCadastro;
 
@@ -113,5 +115,21 @@ public class PedidoDTO {
 
 	public void setIdOpcaoEntrega(BigInteger idOpcaoEntrega) {
 		this.idOpcaoEntrega = idOpcaoEntrega;
+	}
+
+	public BigInteger getCodVend() {
+		return codVend;
+	}
+
+	public void setCodVend(BigInteger codVend) {
+		this.codVend = codVend;
+	}
+
+	public String getCodParcelas() {
+		return codParcelas;
+	}
+
+	public void setCodParcelas(String codParcelas) {
+		this.codParcelas = codParcelas;
 	}
 }

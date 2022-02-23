@@ -33,7 +33,7 @@ public class AutorizacaoFilter implements Filter
 	        		&& ( !(req).getRequestURI().contains(".css.jsf")) 
 	        		&& ( !(req).getRequestURI().contains(".ecss.jsf"))
 	        		&& ( !(req).getRequestURI().contains(".png.jsf"))
-	        		&&( !(req).getRequestURI().equals("/spdm/"))  )
+	        		&&( !(req).getRequestURI().equals("/spdm_v2/"))  )
 	        {	        		        	
 	        	((HttpServletResponse) response).sendRedirect(req.getContextPath() + "/pages/login.jsf");
 	        }
